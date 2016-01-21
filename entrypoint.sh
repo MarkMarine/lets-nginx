@@ -60,8 +60,13 @@ http {
   sendfile on;
   tcp_nopush on;
   keepalive_timeout 65;
-
-  access_log /var/log/nginx/access.log;
+  
+  map $request $loggable {
+    ~*healthcheck\/ping 0;
+    default 1;
+  }
+  
+  access_log /var/log/nginx/access.log  if=$loggable;
   error_log /var/log/nginx/error.log;
 
   server {
