@@ -60,14 +60,6 @@ http {
   sendfile on;
   tcp_nopush on;
   keepalive_timeout 65;
-  
-  map $request $loggable {
-    ~*healthcheck\/ping 0;
-    default 1;
-  }
-  
-  access_log /var/log/nginx/access.log  if=$loggable;
-  error_log /var/log/nginx/error.log;
 
   server {
     listen 443 ssl;
@@ -91,6 +83,11 @@ http {
     root /etc/letsencrypt/webrootauth;
 
     location / {
+      access_log syslog:server=loggly;                                                                                                                                                                  
+      error_log syslog:server=loggly; 
+      if ($http_user_agent ~* Stackdriver_terminus_bot ) {
+        access_log off;
+      }
       proxy_pass http://${UPSTREAM};
       proxy_set_header Host \$host;
       proxy_set_header X-Forwarded-For \$remote_addr;
