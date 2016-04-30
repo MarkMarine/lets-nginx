@@ -20,4 +20,5 @@ ADD entrypoint.sh /entrypoint.sh
 
 EXPOSE 80 443
 
+RUN sed -i "s/server {/server {\n \n  error_log syslog:server=loggly;\n    access_log syslog:server=loggly;\n/" /etc/nginx/conf.d/default.conf
 ENTRYPOINT ["/entrypoint.sh"]
